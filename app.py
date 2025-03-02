@@ -8,7 +8,7 @@ import requests
 # Инициализация приложения Flask
 app = Flask(__name__)
 
-# Учетные данные из переменных окружения (должны быть настроены в Railway)
+# Учетные данные из переменных окружения (настроить в Railway)
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')  # Ваш номер Twilio
@@ -33,10 +33,10 @@ def webhook():
         image_data = response.content
         image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-        # Пример анализа изображения через OpenAI (Vision API)
+        # Анализ изображения через OpenAI
         try:
             response = openai_client.chat.completions.create(
-                model="gpt-4o",  # Используем модель с поддержкой изображений
+                model="gpt-4o",
                 messages=[
                     {
                         "role": "user",
@@ -44,9 +44,7 @@ def webhook():
                             {"type": "text", "text": "Опиши это изображение."},
                             {
                                 "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/jpeg;base64,{image_base64}"
-                                }
+                                "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}
                             }
                         ]
                     }
@@ -57,8 +55,8 @@ def webhook():
         except Exception as e:
             reply = f"Ошибка анализа изображения: {str(e)}"
     else:
-        # Если нет медиа, используем текстовый запрос
-        reply = f"Вы отправили: {incoming_msg}. Анализ через OpenAI: "
+        # Анализ текстового сообщения через OpenAI
+        reply = f"Вы отправили: {incoming_msg}. Анализ: "
         try:
             openai_response = openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
