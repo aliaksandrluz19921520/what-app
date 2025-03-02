@@ -1,1 +1,1 @@
-web: gunicorn app.ру
+web: gunicorn app:app
